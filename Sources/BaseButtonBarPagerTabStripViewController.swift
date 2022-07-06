@@ -29,7 +29,7 @@ open class BaseButtonBarPagerTabStripViewController<ButtonBarCellType: UICollect
     public var settings = ButtonBarPagerTabStripSettings()
     public var buttonBarItemSpec: ButtonBarItemSpec<ButtonBarCellType>!
     public var changeCurrentIndex: ((_ oldCell: ButtonBarCellType?, _ newCell: ButtonBarCellType?, _ animated: Bool) -> Void)?
-    public var changeCurrentIndexProgressive: ((_ oldCell: ButtonBarCellType?, _ newCell: ButtonBarCellType?, _ progressPercentage: CGFloat, _ changeCurrentIndex: Bool, _ animated: Bool) -> Void)?
+    public var changeCurrentIndexProgressive: ((_ oldCell: ButtonBarCellType?, _ newCell: ButtonBarCellType?, _ progressPercentage: CGFloat, _ changeCurrentIndex: Bool, _ toIndex: Int, _ animated: Bool) -> Void)?
 
     @IBOutlet public weak var buttonBarView: ButtonBarView!
 
