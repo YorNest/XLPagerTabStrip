@@ -242,7 +242,7 @@ open class ButtonBarPagerTabStripViewController: PagerTabStripViewController, Pa
             let newIndexPath = IndexPath(item: currentIndex, section: 0)
 
             let cells = cellForItems(at: [oldIndexPath, newIndexPath], reloadIfNotVisible: collectionViewDidLoad)
-            changeCurrentIndexProgressive(cells.first!, cells.last!, progressPercentage, indexWasChanged, true)
+            changeCurrentIndexProgressive(cells.first!, cells.last!, progressPercentage, indexWasChanged, toIndex, true)
         }
     }
 
@@ -289,7 +289,7 @@ open class ButtonBarPagerTabStripViewController: PagerTabStripViewController, Pa
 
         if pagerBehaviour.isProgressiveIndicator {
             if let changeCurrentIndexProgressive = changeCurrentIndexProgressive {
-                changeCurrentIndexProgressive(cells.first!, cells.last!, 1, true, true)
+                changeCurrentIndexProgressive(cells.first!, cells.last!, 1, true, indexPath.item, true)
             }
         } else {
             if let changeCurrentIndex = changeCurrentIndex {
@@ -331,7 +331,7 @@ open class ButtonBarPagerTabStripViewController: PagerTabStripViewController, Pa
 
         if pagerBehaviour.isProgressiveIndicator {
             if let changeCurrentIndexProgressive = changeCurrentIndexProgressive {
-                changeCurrentIndexProgressive(currentIndex == indexPath.item ? nil : cell, currentIndex == indexPath.item ? cell : nil, 1, true, false)
+                changeCurrentIndexProgressive(currentIndex == indexPath.item ? nil : cell, currentIndex == indexPath.item ? cell : nil, 1, true, indexPath.item, false)
             }
         } else {
             if let changeCurrentIndex = changeCurrentIndex {
