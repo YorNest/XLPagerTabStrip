@@ -48,6 +48,7 @@ open class ButtonBarView: UICollectionView {
     open lazy var selectedBar: UIView = { [unowned self] in
         let bar  = UIView(frame: CGRect(x: 0, y: self.frame.size.height - CGFloat(self.selectedBarHeight), width: 0, height: CGFloat(self.selectedBarHeight)))
         bar.layer.zPosition = 9999
+        bar.layer.cornerRadius = self.selectedBarHeight / 2
         return bar
     }()
 
@@ -56,9 +57,11 @@ open class ButtonBarView: UICollectionView {
             updateSelectedBarYPosition()
         }
     }
+    var selectedBarWidth: CGFloat?
     var selectedBarVerticalAlignment: SelectedBarVerticalAlignment = .bottom
     var selectedBarAlignment: SelectedBarAlignment = .center
     var selectedIndex = 0
+    private var setupFirstBarOriginalX: CGFloat?
 
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -79,6 +82,8 @@ open class ButtonBarView: UICollectionView {
         selectedIndex = progressPercentage > 0.5 ? toIndex : fromIndex
 
         let fromFrame = layoutAttributesForItem(at: IndexPath(item: fromIndex, section: 0))!.frame
+        let fromFrameWidth = selectedBarWidth ?? fromFrame.size.width
+
         let numberOfItems = dataSource!.collectionView(self, numberOfItemsInSection: 0)
 
         var toFrame: CGRect
@@ -94,11 +99,18 @@ open class ButtonBarView: UICollectionView {
         } else {
             toFrame = layoutAttributesForItem(at: IndexPath(item: toIndex, section: 0))!.frame
         }
-
+        
+        let toFrameWidth = selectedBarWidth ?? toFrame.size.width
         var targetFrame = fromFrame
+        
         targetFrame.size.height = selectedBar.frame.size.height
-        targetFrame.size.width += (toFrame.size.width - fromFrame.size.width) * progressPercentage
-        targetFrame.origin.x += (toFrame.origin.x - fromFrame.origin.x) * progressPercentage
+        if selectedBarWidth != nil {
+            targetFrame.size.width = toFrameWidth * progressPercentage
+            targetFrame.origin.x += (toFrame.midX - fromFrame.midX + (setupFirstBarOriginalX ?? 0.0)) * progressPercentage
+        } else {
+            targetFrame.size.width += (toFrameWidth - fromFrameWidth) * progressPercentage
+            targetFrame.origin.x += (toFrame.origin.x - fromFrame.origin.x) * progressPercentage
+        }
 
         selectedBar.frame = CGRect(x: targetFrame.origin.x, y: selectedBar.frame.origin.y, width: targetFrame.size.width, height: selectedBar.frame.size.height)
 
@@ -122,8 +134,9 @@ open class ButtonBarView: UICollectionView {
 
         updateContentOffset(animated: animated, pagerScroll: pagerScroll, toFrame: selectedCellFrame, toIndex: (selectedCellIndexPath as NSIndexPath).row)
 
-        selectedBarFrame.size.width = selectedCellFrame.size.width
-        selectedBarFrame.origin.x = selectedCellFrame.origin.x
+        selectedBarFrame.size.width = selectedBarWidth ?? selectedCellFrame.size.width
+        selectedBarFrame.origin.x = selectedBarWidth != nil ? selectedCellFrame.midX - (selectedBarFrame.size.width / 2) : selectedCellFrame.origin.x
+        setupFirstBarOriginalX = selectedBarFrame.origin.x
 
         if animated {
             UIView.animate(withDuration: 0.3, animations: { [weak self] in
