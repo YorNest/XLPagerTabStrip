@@ -81,7 +81,10 @@ open class ButtonBarView: UICollectionView {
     open func move(fromIndex: Int, toIndex: Int, progressPercentage: CGFloat, pagerScroll: PagerScroll) {
         selectedIndex = progressPercentage > 0.5 ? toIndex : fromIndex
 
-        let fromFrame = layoutAttributesForItem(at: IndexPath(item: fromIndex, section: 0))!.frame
+        var fromFrame = layoutAttributesForItem(at: IndexPath(item: fromIndex, section: 0))!.frame
+        if selectedBarWidth != nil {
+            fromFrame.origin.x += setupFirstBarOriginalX ?? 0
+        }
         let fromFrameWidth = selectedBarWidth ?? fromFrame.size.width
 
         let numberOfItems = dataSource!.collectionView(self, numberOfItemsInSection: 0)
@@ -105,7 +108,7 @@ open class ButtonBarView: UICollectionView {
         
         targetFrame.size.height = selectedBar.frame.size.height
         if selectedBarWidth != nil {
-            targetFrame.size.width = toFrameWidth * progressPercentage
+            targetFrame.size.width = toFrameWidth
             targetFrame.origin.x += (toFrame.midX - fromFrame.midX + (setupFirstBarOriginalX ?? 0.0)) * progressPercentage
         } else {
             targetFrame.size.width += (toFrameWidth - fromFrameWidth) * progressPercentage
